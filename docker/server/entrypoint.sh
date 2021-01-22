@@ -1,5 +1,12 @@
 #!/bin/bash
 
+# set var RUN_OPENSHIFT to any value, if running under OpenShift
+if [ -z "${RUN_OPENSHIFT}" ]; then
+     if [[ $# -lt 1 ]] || [[ "$1" == "--"* ]]; then
+     /usr/bin/clickhouse-server --config-file=$CLICKHOUSE_CONFIG "$@"
+     exit ${?}
+fi
+
 DO_CHOWN=1
 if [ "$CLICKHOUSE_DO_NOT_CHOWN" = 1 ]; then
     DO_CHOWN=0
