@@ -47,5 +47,6 @@ EXPOSE 9000 8123 9009
 ENV CLICKHOUSE_CONFIG /etc/clickhouse-server/config.xml
 
 ENV RUN_OPENSHIFT 1
+RUN chown 0:0 /var/lib/clickhouse
 
 ENTRYPOINT ["/entrypoint.sh"]

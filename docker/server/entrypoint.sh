@@ -4,6 +4,8 @@
 CLICKHOUSE_CONFIG="${CLICKHOUSE_CONFIG:-/etc/clickhouse-server/config.xml}"
 CLICKHOUSE_USER="${CLICKHOUSE_USER:-default}"
 
+ls -la /var/lib/clickhouse
+
 # set RUN_OPENSHIFT to any value, if running under OpenShift
 
 function db_extra_init {
