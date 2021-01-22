@@ -2,7 +2,7 @@
 
 IMAGE_TEST := clickhouse-server-test
 
-IMAGE_NAME := quay.io/app-sre/clickhouse-server
+IMAGE_NAME := quay.io/mmclane/clickhouse-server
 IMAGE_TAG := $(shell git rev-parse --short=7 HEAD)
 
 ifneq (,$(wildcard $(CURDIR)/.docker))

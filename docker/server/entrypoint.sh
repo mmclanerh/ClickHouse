@@ -36,8 +36,9 @@ function db_extra_init {
 if [ ! -z "${RUN_OPENSHIFT}" ]; then
      db_extra_init
      if [[ $# -lt 1 ]] || [[ "$1" == "--"* ]]; then
-     /usr/bin/clickhouse-server --config-file=$CLICKHOUSE_CONFIG "$@"
-     exit ${?}
+          /usr/bin/clickhouse-server --config-file=$CLICKHOUSE_CONFIG "$@"
+          exit ${?}
+    fi
 fi
 
 DO_CHOWN=1
