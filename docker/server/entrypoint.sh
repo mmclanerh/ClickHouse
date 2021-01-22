@@ -3,10 +3,10 @@
 # set some vars
 CLICKHOUSE_CONFIG="${CLICKHOUSE_CONFIG:-/etc/clickhouse-server/config.xml}"
 CLICKHOUSE_USER="${CLICKHOUSE_USER:-default}"
-
-ls -la /var/lib/clickhouse
+DATA_DIR="$(clickhouse extract-from-config --config-file $CLICKHOUSE_CONFIG --key=path || true)"
 
 # set RUN_OPENSHIFT to any value, if running under OpenShift
+# RUN_OPENSHIFT=1
 
 function db_extra_init {
     if [ ! -z "$CLICKHOUSE_PASSWORD" ]; then
@@ -35,9 +35,22 @@ function db_extra_init {
     done
 }
 
+function clear_status_file {
+    # Remove $DATA_DIR/status semaphore if we're an openshift container
+    # set RUN_OPENSHIFT to any value to enable
+    STATUS_FILE="${DATA_DIR}/status"
+    if [ ! -z "${RUN_OPENSHIFT}" ] && [ -e "${STATUS_FILE}" ]; then
+         ls -l "${STATUS_FILE}"
+         rm -vf "${STATUS_FILE}"
+    fi
+}
+
+
+# If we're Openshift, skip perm checks, gosu, and in-process probes
 if [ ! -z "${RUN_OPENSHIFT}" ]; then
-     db_extra_init
-     if [[ $# -lt 1 ]] || [[ "$1" == "--"* ]]; then
+    db_extra_init
+    clear_status_file
+    if [[ $# -lt 1 ]] || [[ "$1" == "--"* ]]; then
           /usr/bin/clickhouse-server --config-file=$CLICKHOUSE_CONFIG "$@"
           exit ${?}
     fi
@@ -70,7 +83,6 @@ fi
 HTTP_PORT="$(clickhouse extract-from-config --config-file $CLICKHOUSE_CONFIG --key=http_port)"
 
 # get CH directories locations
-DATA_DIR="$(clickhouse extract-from-config --config-file $CLICKHOUSE_CONFIG --key=path || true)"
 TMP_DIR="$(clickhouse extract-from-config --config-file $CLICKHOUSE_CONFIG --key=tmp_path || true)"
 USER_PATH="$(clickhouse extract-from-config --config-file $CLICKHOUSE_CONFIG --key=user_files_path || true)"
 LOG_PATH="$(clickhouse extract-from-config --config-file $CLICKHOUSE_CONFIG --key=logger.log || true)"
